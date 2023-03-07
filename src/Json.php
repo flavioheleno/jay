@@ -8,9 +8,10 @@ use JsonException;
 use RuntimeException;
 use Scale\DigitalStorage\Gibibytes;
 use ValueError;
+use stdClass;
 
 class Json {
-  public static function fromFile(string $path, bool $associative = false, int $depth = 512): array {
+  public static function fromFile(string $path, bool $associative = false, int $depth = 512): array|stdClass {
     if (is_readable($path) === false) {
       throw new InvalidArgumentException("File not found '{$path}'");
     }
@@ -23,7 +24,7 @@ class Json {
     return self::fromString($json, $associative, $depth);
   }
 
-  public static function fromString(string $json, bool $associative = false, int $depth = 512): array {
+  public static function fromString(string $json, bool $associative = false, int $depth = 512): array|stdClass {
     try {
       if (
         extension_loaded('simdjson') &&
