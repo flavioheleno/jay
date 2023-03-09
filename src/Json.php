@@ -40,7 +40,7 @@ class Json {
     } catch (JsonException | RuntimeException | ValueError $exception) {
       // SimdJsonException extends RuntimeException
       // SimdJsonValueError extends ValueError
-      throw new InvalidArgumentException($exception->getMessage(), $excepton->getCode(), $exception);
+      throw new InvalidArgumentException($exception->getMessage(), $exception->getCode(), $exception);
     }
   }
 }
