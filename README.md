@@ -2,15 +2,15 @@
 
 Jay is a thin wrapper for json & simdjson, allowing the fastest available json decoder to be used in a transparent way.
 
-Under the hood, Jay will pick [simdjson](https://github.com/crazyxman/simdjson_php) if available and the json
-encoded string is up to 4GiB (4294967295 bytes), otherwise it will fallback to PHP's core extension.
+Under the hood, **Jay** will pick [simdjson](https://github.com/crazyxman/simdjson_php) if available and the json
+encoded string is up to 4GiB (4.294.967.295 bytes), otherwise it will fallback to PHP's JSON Core Extension.
 
 ## Installation
 
 To use Jay, simple run:
 
 ```bash
-composer require flavioheleno/scale
+composer require flavioheleno/jay
 ```
 
 ## Usage
