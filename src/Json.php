@@ -12,6 +12,19 @@ use ValueError;
 use stdClass;
 
 class Json {
+  /**
+   * @param string $path      Name of the file to read
+   * @param bool $associative When true, JSON objects will be returned as associative arrays; when false,
+   *                          JSON objects will be returned as an instance of stdClass
+   * @param int $depth        Maximum nesting depth of the structure being decoded. The value must be
+   *                          greater than 0, and less than or equal to 2.147.483.647
+   *
+   * @return array|stdClass Returns the value encoded in json as an appropriate PHP type; unquoted values
+   *                        true, false and null are returned as true, false and null respectively
+   *
+   * @throws InvalidArgumentException if the json cannot be decoded or if the encoded data is deeper than
+   *                                  the nesting limit.
+   */
   public static function fromFile(string $path, bool $associative = false, int $depth = 512): array|stdClass {
     if (is_readable($path) === false) {
       throw new InvalidArgumentException("File \"{$path}\" not found");
@@ -25,6 +38,20 @@ class Json {
     return self::fromString($contents, $associative, $depth);
   }
 
+  /**
+   * @param string|Stringable $contents The json string being decoded; this function only works with UTF-8
+   *                                    encoded strings
+   * @param bool $associative           When true, JSON objects will be returned as associative arrays;
+   *                                    when false, JSON objects will be returned as an instance of stdClass
+   * @param int $depth                  Maximum nesting depth of the structure being decoded. The value must
+   *                                    be greater than 0, and less than or equal to 2.147.483.647
+   *
+   * @return array|stdClass Returns the value encoded in json as an appropriate PHP type; unquoted values
+   *                        true, false and null are returned as true, false and null respectively
+   *
+   * @throws InvalidArgumentException if the json cannot be decoded or if the encoded data is deeper than
+   *                                  the nesting limit.
+   */
   public static function fromString(
     string|Stringable $contents,
     bool $associative = false,
