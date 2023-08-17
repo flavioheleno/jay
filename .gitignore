@@ -8,4 +8,4 @@ composer.lock
 /vendor/
 /logs/*
 !/logs/.gitkeep
-.phpunit.result.cache
+.phpunit.cache

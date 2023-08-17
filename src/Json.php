@@ -6,12 +6,15 @@ namespace Jay;
 use InvalidArgumentException;
 use JsonException;
 use RuntimeException;
-use Scale\DigitalStorage\Gibibytes;
 use Stringable;
 use ValueError;
 use stdClass;
 
 class Json {
+  /**
+   * The maximum string length that can be passed to simdjson_decode()
+   */
+  private const MAX_BYTES = 4294967295;
   /**
    * @param string $path      Name of the file to read
    * @param bool $associative When true, JSON objects will be returned as associative arrays; when false,
@@ -58,10 +61,13 @@ class Json {
     int $depth = 512
   ): array|stdClass {
     try {
+      if ($contents instanceof Stringable) {
+        $contents = (string)$contents;
+      }
       if (
         extension_loaded('simdjson') &&
         function_exists('simdjson_decode') &&
-        strlen($contents) <= 4 * Gibibytes::IN_BYTES
+        strlen($contents) <= self::MAX_BYTES
       ) {
         // The maximum string length that can be passed to simdjson_decode() is 4GiB (4294967295 bytes).
         // json_decode() can decode longer strings.
