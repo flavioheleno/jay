@@ -10,8 +10,8 @@
          failOnRisky="true"
          failOnWarning="true">
     <testsuites>
-        <testsuite name="default">
-            <directory>tests</directory>
+        <testsuite name="unit">
+            <directory>tests/Unit</directory>
         </testsuite>
     </testsuites>
 
@@ -20,4 +20,15 @@
             <directory>src</directory>
         </include>
     </source>
+
+    <coverage>
+        <report>
+            <html outputDirectory="tests/Report/coverage" />
+            <clover outputFile="tests/Report/clover.xml" />
+        </report>
+    </coverage>
+
+    <logging>
+        <junit outputFile="tests/Report/logging.xml" />
+    </logging>
 </phpunit>
