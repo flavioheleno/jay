@@ -21,63 +21,116 @@ This library usage is straightforward.
 $jsonEncoded = '{"a":"b","c":true,"d":10}';
 
 // before
-$jsonDecoded = json_decode($jsonEncoded, true);
+$phpArray = json_decode($jsonEncoded, true);
 
 // after
-$jsonDecoded = Jay\Json::fromString($jsonEncoded, true);
+$phpArray = Jay\Json::fromString($jsonEncoded, true);
+```
+
+```php
+$phpArray = ['a' => 'b', 'c' => true, 'd' => 10];
+
+// before
+$jsonEncoded = json_encode($phpArray);
+
+// after
+$jsonEncoded = Jay\Json::toString($phpArray);
 ```
 
 ```php
 // before
-$jsonEncoded = filge_get_contents('path/to/file.json');
-$jsonDecoded = json_decode($jsonEncoded, true);
+$jsonEncoded = file_get_contents('path/to/file.json');
+$phpArray = json_decode($jsonEncoded, true);
 
 // after
-$jsonDecoded = Jay\Json::fromFile('path/to/file.json', true);
+$phpArray = Jay\Json::fromFile('path/to/file.json', true);
+```
+
+```php
+$phpArray = ['a' => 'b', 'c' => true, 'd' => 10];
+
+// before
+$jsonEncoded = json_encode($phpArray);
+file_put_contents('path/to/file.json', $jsonEncoded);
+
+// after
+Jay\Json::toFile('path/to/file.json', $phpArray);
 ```
 
 ## API
 
 ```php
 /**
- * @param string $path      Name of the file to read
- * @param bool $associative When true, JSON objects will be returned as associative arrays; when
- *                          false, JSON objects will be returned as an instance of stdClass
- * @param int $depth        Maximum nesting depth of the structure being decoded. The value must
- *                          be greater than 0, and less than or equal to 2.147.483.647
+ * @param string $path      Name of the file to read.
+ * @param bool $associative When true, JSON objects will be returned as associative arrays; when false, JSON objects
+ *                          will be returned as an instance of stdClass
+ * @param int $depth        Maximum nesting depth of the structure being decoded. The value must be greater than 0,
+ *                          and less than or equal to 2.147.483.647
  *
- * @return array|stdClass Returns the value encoded in json as an appropriate PHP type; unquoted
- *                        values true, false and null are returned as true, false and null
- *                        respectively
+ * @return array|stdClass Returns the value encoded in JSON as an appropriate PHP type; unquoted values true, false
+ *                        and null are returned as true, false and null respectively
  *
- * @throws InvalidArgumentException if the json cannot be decoded or if the encoded data is
- *                                  deeper than the nesting limit
+ * @throws InvalidArgumentException If the $path argument is not a readable file or if the JSON cannot be decoded or
+ *                                  if the encoded data is deeper than the nesting limit.
+ * @throws RuntimeException         If the contents of $path cannot be read.
  */
 Jay\Json::fromFile(string $path, bool $associative = false, int $depth = 512): array|stdClass;
 
+/**
+ * @param string $path Name of the file to write.
+ * @param mixed $value The value being encoded. Can be any type except a resource. All string data must be UTF-8
+ *                     encoded.
+ * @param int $flags   Bitmask consisting of JSON_FORCE_OBJECT, JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP,
+ *                     JSON_HEX_APOS, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE, JSON_NUMERIC_CHECK,
+ *                     JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_PRESERVE_ZERO_FRACTION, JSON_PRETTY_PRINT,
+ *                     JSON_UNESCAPED_LINE_TERMINATORS, JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE,
+ *                     JSON_THROW_ON_ERROR.
+ * @param int $depth   Set the maximum depth. Must be greater than zero.
+ *
+ * @return int|false The number of bytes that were written to the file, or false on failure.
+ *
+ * @throws InvalidArgumentException If the $path argument is not a writable file or if the JSON cannot be encoded or
+ *                                  if the decoded data is deeper than the nesting limit.
+ * @throws RuntimeException         If the encoded JSON cannot be write to $path.
+ */
+Jay\Json::toFile(string $path, mixed $value, int $flags = 0, int $depth = 512): int|false;
 
 /**
- * @param string|Stringable $contents The json string being decoded; this function only works
- *                                    with UTF-8 encoded strings
- * @param bool $associative           When true, JSON objects will be returned as associative
- *                                    arrays; when false, JSON objects will be returned as an
- *                                    instance of stdClass
- * @param int $depth                  Maximum nesting depth of the structure being decoded. The
- *                                    value must be greater than 0, and less than or equal to
- *                                    2.147.483.647
+ * @param string|Stringable $contents The JSON string being decoded; this function only works with UTF-8 encoded
+ *                                    strings.
+ * @param bool $associative           When true, JSON objects will be returned as associative arrays; when false,
+ *                                    JSON objects will be returned as an instance of stdClass
+ * @param int $depth                  Maximum nesting depth of the structure being decoded. The value must be greater
+ *                                    than 0, and less than or equal to 2.147.483.647
  *
- * @return array|stdClass Returns the value encoded in json as an appropriate PHP type; unquoted
- *                        values true, false and null are returned as true, false and null
- *                        respectively
+ * @return array|stdClass Returns the value encoded in JSON as an appropriate PHP type; unquoted values true, false
+ *                        and null are returned as true, false and null respectively
  *
- * @throws InvalidArgumentException if the json cannot be decoded or if the encoded data is
- *                                  deeper than the nesting limit.
+ * @throws InvalidArgumentException If the JSON cannot be decoded or if the encoded data is deeper than the nesting
+ *                                  limit.
  */
 Jay\Json::fromString(
   string|Stringable $contents,
   bool $associative = false,
   int $depth = 512
 ): array|stdClass;
+
+/**
+ * @param mixed $value The value being encoded. Can be any type except a resource. All string data must be UTF-8
+ *                     encoded.
+ * @param int $flags   Bitmask consisting of JSON_FORCE_OBJECT, JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP,
+ *                     JSON_HEX_APOS, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE, JSON_NUMERIC_CHECK,
+ *                     JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_PRESERVE_ZERO_FRACTION, JSON_PRETTY_PRINT,
+ *                     JSON_UNESCAPED_LINE_TERMINATORS, JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE,
+ *                     JSON_THROW_ON_ERROR.
+ * @param int $depth   Set the maximum depth. Must be greater than zero.
+ *
+ * @return string A JSON encoded string.
+ *
+ * @throws InvalidArgumentException If the JSON cannot be encoded or if the decoded data is deeper than the nesting
+ *                                  limit.
+ */
+Jay\Json::toString(mixed $value, int $flags = 0, int $depth = 512): string;
 ```
 
 ## License
