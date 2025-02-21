@@ -14,19 +14,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['8.1', '8.2', '8.3']
+        php-versions: ['8.1', '8.2', '8.3', '8.4']
         extensions: ['json', 'simdjson']
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: Setup PHP ${{ matrix.php-versions }} with ${{ matrix.extensions }} extension
-      uses: shivammathur/setup-php@4bd44f22a98a19e0950cbad5f31095157cc9621b
+      uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401 # v2.32.0
       with:
         php-version: ${{ matrix.php-versions }}
         coverage: none
-        extensions: none, ${{ matrix.extensions }}, dom, libxml, mbstring, tokenizer, xml, xmlwriter
+        extensions: none, ${{ matrix.extensions }}, curl, dom, libxml, mbstring, tokenizer, xml, xmlwriter, zip
         tools: composer
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -35,7 +35,7 @@ jobs:
       run: composer validate --strict
 
     - name: Install dependencies
-      uses: ramsey/composer-install@83af392bf5f031813d25e6fe4cd626cdba9a2df6
+      uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # v3.0.0
 
     - name: Run Code Linter
       run: make lint
