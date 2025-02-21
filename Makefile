@@ -19,7 +19,7 @@ phpunit: install ## Run phpunit test suite
 	@./vendor/bin/phpunit ./tests
 
 phpunit-%: install
-	@./vendor/bin/phpunit ./tests --group $*
+	@./vendor/bin/phpunit ./tests --no-coverage --group $*
 
 help: ## Show this help
 	@printf "\033[37mUsage:\033[0m\n"
