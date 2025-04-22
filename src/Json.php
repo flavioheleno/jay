@@ -20,7 +20,7 @@ class Json {
    */
   private const MAX_BYTES = 4294967295;
   /**
-   * @param string $path      Name of the file to read.
+   * @param string $filename  Name of the file to read.
    * @param bool $associative When true, JSON objects will be returned as associative arrays; when false, JSON objects
    *                          will be returned as an instance of stdClass
    * @param int $depth        Maximum nesting depth of the structure being decoded. The value must be greater than 0,
@@ -29,48 +29,61 @@ class Json {
    * @return array|stdClass Returns the value encoded in JSON as an appropriate PHP type; unquoted values true, false
    *                        and null are returned as true, false and null respectively
    *
-   * @throws InvalidArgumentException If the $path argument is not a readable file or if the JSON cannot be decoded or
-   *                                  if the encoded data is deeper than the nesting limit.
-   * @throws RuntimeException         If the contents of $path cannot be read.
+   * @throws InvalidArgumentException If the $filename argument is not a file, is not readable, if the JSON cannot be
+   *                                  decoded or if the encoded data is deeper than the nesting limit.
+   * @throws RuntimeException         If the contents of $filename cannot be read.
    */
-  public static function fromFile(string $path, bool $associative = false, int $depth = 512): array|stdClass {
-    if (is_readable($path) === false) {
-      throw new InvalidArgumentException("File \"{$path}\" not found");
+  public static function fromFile(string $filename, bool $associative = false, int $depth = 512): array|stdClass {
+    if (is_file($filename) === false) {
+      throw new InvalidArgumentException("File \"{$filename}\" not found");
     }
 
-    $contents = file_get_contents($path);
+    if (is_readable($filename) === false) {
+      throw new InvalidArgumentException("File \"{$filename}\" is not readable");
+    }
+
+    $contents = file_get_contents($filename);
     if ($contents === false) {
-      throw new RuntimeException("Failed to read file contents of \"{$path}\"");
+      throw new RuntimeException("Failed to read file contents of \"{$filename}\"");
     }
 
     return self::fromString($contents, $associative, $depth);
   }
 
   /**
-   * @param string $path Name of the file to write.
-   * @param mixed $value The value being encoded. Can be any type except a resource. All string data must be UTF-8
-   *                     encoded.
-   * @param int $flags   Bitmask consisting of JSON_FORCE_OBJECT, JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP,
-   *                     JSON_HEX_APOS, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE, JSON_NUMERIC_CHECK,
-   *                     JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_PRESERVE_ZERO_FRACTION, JSON_PRETTY_PRINT,
-   *                     JSON_UNESCAPED_LINE_TERMINATORS, JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE,
-   *                     JSON_THROW_ON_ERROR.
-   * @param int $depth   Set the maximum depth. Must be greater than zero.
+   * @param string $filename Name of the file to write.
+   * @param mixed $value     The value being encoded. Can be any type except a resource. All string data must be UTF-8
+   *                         encoded.
+   * @param int $flags       Bitmask consisting of JSON_FORCE_OBJECT, JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP,
+   *                         JSON_HEX_APOS, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE, JSON_NUMERIC_CHECK,
+   *                         JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_PRESERVE_ZERO_FRACTION, JSON_PRETTY_PRINT,
+   *                         JSON_UNESCAPED_LINE_TERMINATORS, JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE,
+   *                         JSON_THROW_ON_ERROR.
+   * @param int $depth       Set the maximum depth. Must be greater than zero.
    *
    * @return int|false The number of bytes that were written to the file, or false on failure.
    *
-   * @throws InvalidArgumentException If the $path argument is not a writable file or if the JSON cannot be encoded or
-   *                                  if the decoded data is deeper than the nesting limit.
-   * @throws RuntimeException         If the encoded JSON cannot be write to $path.
+   * @throws InvalidArgumentException If the $filename argument is not a writable file or if the JSON cannot be encoded
+   *                                  or if the decoded data is deeper than the nesting limit.
+   * @throws RuntimeException         If the encoded JSON cannot be write to $filename.
    */
-  public static function toFile(string $path, mixed $value, int $flags = 0, int $depth = 512): int|false {
-    if (is_writable($path) === false) {
-      throw new InvalidArgumentException("File \"{$path}\" is not writable");
+  public static function toFile(string $filename, mixed $value, int $flags = 0, int $depth = 512): int|false {
+    if (is_file($filename) === false && is_writable(dirname($filename)) === false) {
+      throw new InvalidArgumentException(
+        sprintf(
+          'Directory "%s" is not writable',
+          dirname($filename)
+        )
+      );
     }
 
-    $bytes = file_put_contents($path, self::toString($value, $flags, $depth), LOCK_EX);
+    if (is_writable($filename) === false) {
+      throw new InvalidArgumentException("File \"{$filename}\" is not writable");
+    }
+
+    $bytes = file_put_contents($filename, self::toString($value, $flags, $depth), LOCK_EX);
     if ($bytes === false) {
-      throw new RuntimeException("Failed to write JSON contents to \"{$path}\"");
+      throw new RuntimeException("Failed to write JSON contents to \"{$filename}\"");
     }
 
     return $bytes;
@@ -99,6 +112,7 @@ class Json {
       if ($contents instanceof Stringable) {
         $contents = (string)$contents;
       }
+
       if (
         extension_loaded('simdjson') === true &&
         function_exists('simdjson_decode') === true &&

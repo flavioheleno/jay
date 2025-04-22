@@ -18,9 +18,7 @@ use Stringable;
 class JsonTest extends TestCase {
   #[Group('json'), Group('simdjson')]
   #[RunInSeparateProcess]
-  public function testFromFileWithUnreadablePath(): void {
-    require_once(__DIR__ . '/../Stub/is_readable.php');
-
+  public function testFromFileWithoutFile(): void {
     $this->expectException(InvalidArgumentException::class);
     $this->expectExceptionMessage('File "jay.json" not found');
 
@@ -29,7 +27,20 @@ class JsonTest extends TestCase {
 
   #[Group('json'), Group('simdjson')]
   #[RunInSeparateProcess]
+  public function testFromFileWithNotReadableFile(): void {
+    require_once(__DIR__ . '/../Stub/is_file.php');
+    require_once(__DIR__ . '/../Stub/is_readable.php');
+
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('File "jay.json" is not readable');
+
+    Json::fromFile('jay.json');
+  }
+
+  #[Group('json'), Group('simdjson')]
+  #[RunInSeparateProcess]
   public function testFromFileWithFailToReadContents(): void {
+    require_once(__DIR__ . '/../Stub/is_file.php');
     require_once(__DIR__ . '/../Stub/file_get_contents.php');
 
     $this->expectException(RuntimeException::class);
@@ -58,11 +69,23 @@ class JsonTest extends TestCase {
 
   #[Group('json'), Group('simdjson')]
   #[RunInSeparateProcess]
-  public function testToFileWithUnwritablePath(): void {
+  public function testToFileWithNotWritableFile(): void {
+    require_once(__DIR__ . '/../Stub/is_file.php');
     require_once(__DIR__ . '/../Stub/is_writable.php');
 
     $this->expectException(InvalidArgumentException::class);
     $this->expectExceptionMessage('File "jay.json" is not writable');
+
+    Json::toFile('jay.json', ['a' => 'b']);
+  }
+
+  #[Group('json'), Group('simdjson')]
+  #[RunInSeparateProcess]
+  public function testToFileWithNotWritablePath(): void {
+    require_once(__DIR__ . '/../Stub/is_writable.php');
+
+    $this->expectException(InvalidArgumentException::class);
+    $this->expectExceptionMessage('Directory "." is not writable');
 
     Json::toFile('jay.json', ['a' => 'b']);
   }
