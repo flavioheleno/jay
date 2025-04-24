@@ -68,6 +68,10 @@ class Json {
    * @throws RuntimeException         If the encoded JSON cannot be write to $filename.
    */
   public static function toFile(string $filename, mixed $value, int $flags = 0, int $depth = 512): int|false {
+    if (is_file($filename) === true && is_writable($filename) === false) {
+      throw new InvalidArgumentException("File \"{$filename}\" is not writable");
+    }
+
     if (is_file($filename) === false && is_writable(dirname($filename)) === false) {
       throw new InvalidArgumentException(
         sprintf(
@@ -75,10 +79,6 @@ class Json {
           dirname($filename)
         )
       );
-    }
-
-    if (is_writable($filename) === false) {
-      throw new InvalidArgumentException("File \"{$filename}\" is not writable");
     }
 
     $bytes = file_put_contents($filename, self::toString($value, $flags, $depth), LOCK_EX);

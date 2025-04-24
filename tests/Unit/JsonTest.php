@@ -16,6 +16,18 @@ use Stringable;
 
 #[CoversClass(Json::class)]
 class JsonTest extends TestCase {
+  /**
+   * PHP's "tempnam" creates the file ahead of time, this function just generates a unique filename in system's
+   * temporary directory and returns it.
+   */
+  private function tmpfname(): string {
+    do {
+      $filename = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'jay-' . bin2hex(random_bytes(8)) . '.json';
+    } while (is_file($filename) === true);
+
+    return $filename;
+  }
+
   #[Group('json'), Group('simdjson')]
   #[RunInSeparateProcess]
   public function testFromFileWithoutFile(): void {
@@ -60,7 +72,7 @@ class JsonTest extends TestCase {
       'f' => ['g' => []]
     ];
 
-    $tmpfname = tempnam(sys_get_temp_dir(), 'jay');
+    $tmpfname = $this->tmpfname();
     file_put_contents($tmpfname, json_encode($obj));
 
     $decoded = Json::fromFile($tmpfname, true);
@@ -112,7 +124,7 @@ class JsonTest extends TestCase {
       'f' => ['g' => []]
     ];
 
-    $tmpfname = tempnam(sys_get_temp_dir(), 'jay');
+    $tmpfname = $this->tmpfname();
     $bytes = Json::toFile($tmpfname, $obj);
 
     $this->assertSame(58, $bytes);
