@@ -42,5 +42,8 @@
     "phpunit/phpunit": "^10.3",
     "psy/psysh": "^0.11.20",
     "roave/security-advisories": "dev-latest"
+  },
+  "suggest": {
+    "ext-simdjson": "Faster JSON decoding through simdjson bindings for PHP"
   }
 }
