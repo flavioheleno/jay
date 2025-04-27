@@ -68,31 +68,36 @@ Jay\Json::toFile('path/to/file.json', $phpArray);
 
 ```php
 /**
- * @param string $filename  Name of the file to read.
- * @param bool $associative When true, JSON objects will be returned as associative arrays; when false, JSON objects
- *                          will be returned as an instance of stdClass
- * @param int $depth        Maximum nesting depth of the structure being decoded. The value must be greater than 0,
- *                          and less than or equal to 2.147.483.647
+ * @param string $filename   Name of the file to read.
+ * @param bool $associative  When true, JSON objects will be returned as associative arrays; when false, JSON objects
+ *                           will be returned as an instance of stdClass
+ * @param int<1, max> $depth Maximum nesting depth of the structure being decoded. The value must be greater than 0,
+ *                           and less than or equal to 2.147.483.647
  *
- * @return array|stdClass Returns the value encoded in JSON as an appropriate PHP type; unquoted values true, false
- *                        and null are returned as true, false and null respectively
+ * @return mixed Returns the value encoded in JSON as an appropriate PHP type; unquoted values true, false and null
+ *               are returned as true, false and null respectively
  *
  * @throws InvalidArgumentException If the $filename argument is not a file, is not readable, if the JSON cannot be
  *                                  decoded or if the encoded data is deeper than the nesting limit.
  * @throws RuntimeException         If the contents of $filename cannot be read.
  */
-Jay\Json::fromFile(string $filename, bool $associative = false, int $depth = 512): array|stdClass;
+Jay\Json::fromFile(
+  string $filename,
+  bool $associative = false,
+  int $depth = 512
+): mixed;
 
 /**
- * @param string $filename Name of the file to write.
- * @param mixed $value     The value being encoded. Can be any type except a resource. All string data must be UTF-8
- *                         encoded.
- * @param int $flags       Bitmask consisting of JSON_FORCE_OBJECT, JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP,
- *                         JSON_HEX_APOS, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE, JSON_NUMERIC_CHECK,
- *                         JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_PRESERVE_ZERO_FRACTION, JSON_PRETTY_PRINT,
- *                         JSON_UNESCAPED_LINE_TERMINATORS, JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE,
- *                         JSON_THROW_ON_ERROR.
- * @param int $depth       Set the maximum depth. Must be greater than zero.
+ * @param string $filename   Name of the file to write.
+ * @param mixed $value       The value being encoded. Can be any type except a resource. All string data must be UTF-8
+ *                           encoded.
+ * @param int $flags         Bitmask consisting of JSON_FORCE_OBJECT, JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP,
+ *                           JSON_HEX_APOS, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE,
+ *                           JSON_NUMERIC_CHECK, JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_PRESERVE_ZERO_FRACTION,
+ *                           JSON_PRETTY_PRINT, JSON_UNESCAPED_LINE_TERMINATORS, JSON_UNESCAPED_SLASHES,
+ *                           JSON_UNESCAPED_UNICODE, JSON_THROW_ON_ERROR.
+ * @param int<1, max> $depth Maximum nesting depth of the structure being encoded. The value must be greater than 0,
+ *                           and less than or equal to 2.147.483.647
  *
  * @return int|false The number of bytes that were written to the file, or false on failure.
  *
@@ -100,18 +105,23 @@ Jay\Json::fromFile(string $filename, bool $associative = false, int $depth = 512
  *                                  or if the decoded data is deeper than the nesting limit.
  * @throws RuntimeException         If the encoded JSON cannot be write to $filename.
  */
-Jay\Json::toFile(string $filename, mixed $value, int $flags = 0, int $depth = 512): int|false;
+Jay\Json::toFile(
+  string $filename,
+  mixed $value,
+  int $flags = 0,
+  int $depth = 512
+): int|false;
 
 /**
  * @param string|Stringable $contents The JSON string being decoded; this function only works with UTF-8 encoded
  *                                    strings.
  * @param bool $associative           When true, JSON objects will be returned as associative arrays; when false,
  *                                    JSON objects will be returned as an instance of stdClass
- * @param int $depth                  Maximum nesting depth of the structure being decoded. The value must be greater
+ * @param int<1, max> $depth          Maximum nesting depth of the structure being decoded. The value must be greater
  *                                    than 0, and less than or equal to 2.147.483.647
  *
- * @return array|stdClass Returns the value encoded in JSON as an appropriate PHP type; unquoted values true, false
- *                        and null are returned as true, false and null respectively
+ * @return mixed Returns the value encoded in JSON as an appropriate PHP type; unquoted values true, false and null
+ *               are returned as true, false and null respectively
  *
  * @throws InvalidArgumentException If the JSON cannot be decoded or if the encoded data is deeper than the nesting
  *                                  limit.
@@ -120,24 +130,29 @@ Jay\Json::fromString(
   string|Stringable $contents,
   bool $associative = false,
   int $depth = 512
-): array|stdClass;
+): mixed;
 
 /**
- * @param mixed $value The value being encoded. Can be any type except a resource. All string data must be UTF-8
- *                     encoded.
- * @param int $flags   Bitmask consisting of JSON_FORCE_OBJECT, JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP,
- *                     JSON_HEX_APOS, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE, JSON_NUMERIC_CHECK,
- *                     JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_PRESERVE_ZERO_FRACTION, JSON_PRETTY_PRINT,
- *                     JSON_UNESCAPED_LINE_TERMINATORS, JSON_UNESCAPED_SLASHES, JSON_UNESCAPED_UNICODE,
- *                     JSON_THROW_ON_ERROR.
- * @param int $depth   Set the maximum depth. Must be greater than zero.
+ * @param mixed $value       The value being encoded. Can be any type except a resource. All string data must be UTF-8
+ *                           encoded.
+ * @param int $flags         Bitmask consisting of JSON_FORCE_OBJECT, JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP,
+ *                           JSON_HEX_APOS, JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE,
+ *                           JSON_NUMERIC_CHECK, JSON_PARTIAL_OUTPUT_ON_ERROR, JSON_PRESERVE_ZERO_FRACTION,
+ *                           JSON_PRETTY_PRINT, JSON_UNESCAPED_LINE_TERMINATORS, JSON_UNESCAPED_SLASHES,
+ *                           JSON_UNESCAPED_UNICODE, JSON_THROW_ON_ERROR.
+ * @param int<1, max> $depth Maximum nesting depth of the structure being encoded. The value must be greater than 0,
+ *                           and less than or equal to 2.147.483.647
  *
  * @return string A JSON encoded string.
  *
  * @throws InvalidArgumentException If the JSON cannot be encoded or if the decoded data is deeper than the nesting
  *                                  limit.
  */
-Jay\Json::toString(mixed $value, int $flags = 0, int $depth = 512): string;
+Jay\Json::toString(
+  mixed $value,
+  int $flags = 0,
+  int $depth = 512
+): string;
 ```
 
 ## License
