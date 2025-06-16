@@ -22,7 +22,7 @@ jobs:
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: Setup PHP ${{ matrix.php-versions }} with ${{ matrix.extensions }} extension
-      uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401 # v2.32.0
+      uses: shivammathur/setup-php@0f7f1d08e3e32076e51cae65eb0b0c871405b16e # v2.34.1
       with:
         php-version: ${{ matrix.php-versions }}
         coverage: none
@@ -35,7 +35,7 @@ jobs:
       run: composer validate --strict
 
     - name: Install dependencies
-      uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # v3.0.0
+      uses: ramsey/composer-install@3cf229dc2919194e9e36783941438d17239e8520 # v3.1.1
 
     - name: Run Code Linter
       run: make lint
